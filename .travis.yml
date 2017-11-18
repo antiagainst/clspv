@@ -1,0 +1,54 @@
+# Linux Build Configuration for Travis
+
+language: cpp
+
+# Require sudo so we use VM instead of container
+# VM provides more memory (7.5GB) than container (4GB).
+sudo: required
+dist: trusty
+
+os:
+  - linux
+
+compiler:
+  - clang
+
+env:
+  - CLSPV_BUILD_TYPE=Release
+  - CLSPV_BUILD_TYPE=Debug
+
+git:
+  depth: 1
+  submodules: false
+
+branches:
+  only:
+    - master
+
+matrix:
+  fast_finish: true
+
+addons:
+  apt:
+    packages:
+      - ninja-build
+
+install:
+  # Download a self-extracting CMake archive to install a newer version
+  # of CMake that meets clspv's requirements
+  - mkdir $HOME/cmake
+  - export PATH=$HOME/cmake/bin:$PATH
+  - wget https://cmake.org/files/v3.9/cmake-3.9.6-Linux-x86_64.sh
+  - chmod +x cmake-3.9.6-Linux-x86_64.sh
+  - ./cmake-3.9.6-Linux-x86_64.sh --prefix=$HOME/cmake --exclude-subdir --skip-license
+  - which cmake && cmake --version
+
+before_script:
+  - python utils/fetch_sources.py
+
+script:
+  - mkdir build && cd build
+  - cmake -GNinja -DCMAKE_BUILD_TYPE=${CLSPV_BUILD_TYPE} ..
+  - ninja
+  # Check takes quite some time to run. Let set the wait time to 20 min.
+  #- travis_wait 20 ninja check-spirv
