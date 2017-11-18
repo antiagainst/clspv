@@ -1,0 +1,44 @@
+# Windows Build Configuration for AppVeyor
+# http://www.appveyor.com/docs/appveyor-yml
+
+version: "{build}"
+
+image:
+  - Visual Studio 2015
+
+platform:
+  - x64
+
+configuration:
+  - Debug
+  - Release
+
+clone_depth: 1
+
+branches:
+  only:
+    - master
+
+matrix:
+  fast_finish: true
+
+install:
+  - set NINJA_URL="https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-win.zip"
+  - appveyor DownloadFile %NINJA_URL% -FileName ninja.zip
+  - 7z x ninja.zip -oC:\ninja > nul
+  - set PATH=C:\ninja;%PATH%
+  - which ninja && ninja --version
+
+before_build:
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+  - python utils/fetch_sources.py
+
+build_script:
+  - mkdir build && cd build
+  - cmake -GNinja -DCMAKE_BUILD_TYPE=%CONFIGURATION% ..
+  - ninja
+
+# Runing tests takes extremely long time on Windows since we are starting a new clspv
+# process for each input test file. Disable it right now.
+#test_script:
+#  - ninja check-spirv
