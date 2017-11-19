@@ -50,7 +50,7 @@ before_script:
 
 script:
   - mkdir build && cd build
-  - cmake -GNinja -DCMAKE_BUILD_TYPE=${CLSPV_BUILD_TYPE} -DCLSPV_USE_CCACHE=ON ..
+  - cmake -GNinja -DCMAKE_BUILD_TYPE=${CLSPV_BUILD_TYPE} -DCLSPV_USE_CCACHE=ON -DLLVM_TARGETS_TO_BUILD=X86 ..
   - ninja
   # Check takes quite some time to run. Let set the wait time to 20 min.
-  #- travis_wait 20 ninja check-spirv
+  - travis_wait 20 ninja check-spirv
