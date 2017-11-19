@@ -17,6 +17,8 @@ env:
   - CLSPV_BUILD_TYPE=Release
   - CLSPV_BUILD_TYPE=Debug
 
+cache: ccache
+
 git:
   depth: 1
   submodules: false
@@ -48,7 +50,7 @@ before_script:
 
 script:
   - mkdir build && cd build
-  - cmake -GNinja -DCMAKE_BUILD_TYPE=${CLSPV_BUILD_TYPE} ..
+  - cmake -GNinja -DCMAKE_BUILD_TYPE=${CLSPV_BUILD_TYPE} -DCLSPV_USE_CCACHE=ON ..
   - ninja
   # Check takes quite some time to run. Let set the wait time to 20 min.
   #- travis_wait 20 ninja check-spirv
