@@ -35,7 +35,7 @@ before_build:
 
 build_script:
   - mkdir build && cd build
-  - cmake -GNinja -DCMAKE_BUILD_TYPE=%CONFIGURATION% ..
+  - cmake -GNinja -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DLLVM_TARGETS_TO_BUILD=X86 ..
   - ninja
 
 # Runing tests takes extremely long time on Windows since we are starting a new clspv
